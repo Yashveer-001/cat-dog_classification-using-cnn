@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cat vs Dog Classifier</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🐾 Cat vs Dog Classifier</h1>
+      <p>Upload an image and let the model decide.</p>
+    </header>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+      <div class="flash">
+        {% for message in messages %}
+          <div class="flash-item">{{ message }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    {% endwith %}
+
+    <form class="card" action="/" method="POST" enctype="multipart/form-data">
+      <label for="file" class="file-label">Choose an image (JPG/PNG/WEBP)</label>
+      <input id="file" name="file" type="file" accept=".jpg,.jpeg,.png,.webp" required />
+      <button type="submit">Predict</button>
+    </form>
+
+    {% if prediction %}
+    <section class="result card">
+      <h2>Result</h2>
+      <div class="result-grid">
+        {% if image_url %}
+          <img class="preview" src="{{ image_url }}" alt="Uploaded image" />
+        {% endif %}
+        <div class="result-text">
+          <div class="pill {{ 'dog' if prediction == 'Dog' else 'cat' }}">
+            {{ prediction }}
+          </div>
+          <p class="muted">Model confidence (Dog probability): {{ '%.4f'|format(probability) }}</p>
+          <div class="bar">
+            <span class="bar-fill" style="width: {{ (probability * 100) | round(1) }}%;"></span>
+          </div>
+        </div>
+      </div>
+      <a class="again" href="{{ url_for('index') }}">Try another image</a>
+    </section>
+    {% endif %}
+
+    <footer>
+      <p>Model: <code>cat_dog_model.h5</code> • Input size: 224×224</p>
+    </footer>
+  </div>
+</body>
+</html>
